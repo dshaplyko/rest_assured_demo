@@ -4,14 +4,27 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 import static io.restassured.RestAssured.given;
 
 public class AppTest {
+
+    private Properties config;
+
+    @BeforeClass
+    public void setUp() throws IOException {
+        config = new Properties();
+        FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
+        config.load(fis);
+        RestAssured.baseURI = config.getProperty("baseUrl");
+    }
 
     // Helper method to read JSON file as a String
     private String readFileAsString(String fileName) throws IOException {
@@ -21,8 +34,6 @@ public class AppTest {
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
-        RestAssured.baseURI = "https://fulfillment-adapter-v1.snc-api.qa.irb.digital";
-
         String requestBody = readFileAsString("request/PostEstimateRequest.json");
 
         Response response = given()
@@ -56,8 +67,6 @@ public class AppTest {
 
     @Test
     public void testPostDeliveryValidate() throws IOException {
-        RestAssured.baseURI = "https://fulfillment-adapter-v1.snc-api.qa.irb.digital";
-
         String requestBody = readFileAsString("request/PostValidateRequest.json");
 
         Response response = given()
