@@ -96,4 +96,89 @@ public class AppTest {
         String secondPickupCity = response.path("pickupDetails.locations[1].contactDetails.address.cityName");
         Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup city name");
     }
+
+    @Test
+    public void testUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/ARB/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":\"ACK\""));
+    }
+
+    @Test
+    public void testUpdateDeliveryStatusInvalidRequest() {
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body("{}")
+                .when()
+                .post("/brand/ARB/delivery")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+    }
+
+    @Test
+    public void testUpdateDeliveryStatusServerError() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/ARB/delivery")
+                .then()
+                .statusCode(500)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+    }
+
+    @Test
+    public void testUpdateDeliveryStatusServiceUnavailable() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/ARB/delivery")
+                .then()
+                .statusCode(503)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+    }
 }
