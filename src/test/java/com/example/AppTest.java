@@ -96,4 +96,36 @@ public class AppTest {
         String secondPickupCity = response.path("pickupDetails.locations[1].contactDetails.address.cityName");
         Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup city name");
     }
+
+    @Test
+    public void testPostCancelDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostCancelDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/12345/cancel")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"returnInitiated\":"));
+        Assert.assertTrue(responseBody.contains("\"cancelledAt\":"));
+
+        // Extract and validate specific fields
+        Boolean returnInitiated = response.path("returnInitiated");
+        Assert.assertTrue(returnInitiated, "Return was not initiated");
+
+        String cancelledAt = response.path("cancelledAt");
+        Assert.assertNotNull(cancelledAt, "Cancelled at timestamp is null");
+    }
 }
