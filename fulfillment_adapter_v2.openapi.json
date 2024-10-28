@@ -1,0 +1,2207 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "OpenAPI definition",
+      "version": "v0"
+    },
+    "servers": [
+      {
+        "url": "https://fulfillment-adapter-v1.snc-api.qa.irb.digital",
+        "description": "Generated server url"
+      }
+    ],
+    "tags": [
+      {
+        "name": "delivery-operations",
+        "description": "Operations with delivery"
+      },
+      {
+        "name": "circuit-breaker-controller",
+        "description": "Circuit Breaker Service"
+      }
+    ],
+    "paths": {
+      "/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/reset": {
+        "put": {
+          "tags": [
+            "circuit-breaker-controller"
+          ],
+          "description": "Reset Circuit Breaker",
+          "operationId": "resetCircuitBreaker",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "circuitbreakername",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Circuit Breaker reset.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CircuitBreakerResponseDto"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Unable to reset Circuit Breaker.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponseDto"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unable to reset Circuit Breaker.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/disable": {
+        "put": {
+          "tags": [
+            "circuit-breaker-controller"
+          ],
+          "description": "Disable Circuit Breaker",
+          "operationId": "disableCircuitBreaker",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "circuitbreakername",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Circuit Breaker disabled.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CircuitBreakerResponseDto"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Unable to disable Circuit Breaker.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponseDto"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unable to disable Circuit Breaker.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/brand/{brandId}/location/{locationId}/delivery": {
+        "post": {
+          "tags": [
+            "delivery-operations"
+          ],
+          "summary": "Schedule delivery",
+          "operationId": "scheduleDelivery",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "description": "Official brand ID. See https://inspirebrands.atlassian.net/wiki/spaces/DBBP/pages/863404137/Official+Brand+IDs",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ARB",
+                  "BWW",
+                  "JJE",
+                  "RTO",
+                  "SDI",
+                  "DUN",
+                  "BRO"
+                ]
+              }
+            },
+            {
+              "name": "channel-id",
+              "in": "header",
+              "description": "Digital Channel ID",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "WEBOA",
+                  "MOBILE_IOS",
+                  "MOBILE_ANDROID",
+                  "STORE",
+                  "LEGACY_WEBOA",
+                  "LEGACY_MOBILE_IOS",
+                  "LEGACY_MOBILE_ANDROID",
+                  "CUSTOMER_SUPPORT",
+                  "RAP",
+                  "LEGACY",
+                  "MOBILE",
+                  "CHOICE",
+                  "TICKET_MANAGER",
+                  "DELIVERY",
+                  "LOYALTY_SALES"
+                ]
+              }
+            },
+            {
+              "name": "sub-channel-id",
+              "in": "header",
+              "description": "Sub-Channel IDs identify the sub channel under the selling channel.",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "MOBILE",
+                  "WEB",
+                  "ONE_INSPIRE",
+                  "COAST",
+                  "CALL4WINGS",
+                  "TICKET_MANAGER",
+                  "IAC",
+                  "VROMO"
+                ]
+              }
+            },
+            {
+              "name": "locationId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "externalDeliveryId",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleDeliveryRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Delivery was scheduled successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ScheduleDeliveryResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ScheduleDeliveryResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "System error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Service Unavailable",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/brand/{brandId}/delivery": {
+        "post": {
+          "tags": [
+            "delivery-operations"
+          ],
+          "summary": "Update Delivery Status",
+          "operationId": "updateDelivery",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "description": "Official brand ID. See https://inspirebrands.atlassian.net/wiki/spaces/DBBP/pages/863404137/Official+Brand+IDs",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ARB",
+                  "BWW",
+                  "JJE",
+                  "RTO",
+                  "SDI",
+                  "DUN",
+                  "BRO"
+                ]
+              }
+            },
+            {
+              "name": "channel-id",
+              "in": "header",
+              "description": "Digital Channel ID",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "WEBOA",
+                  "MOBILE_IOS",
+                  "MOBILE_ANDROID",
+                  "STORE",
+                  "LEGACY_WEBOA",
+                  "LEGACY_MOBILE_IOS",
+                  "LEGACY_MOBILE_ANDROID",
+                  "CUSTOMER_SUPPORT",
+                  "RAP",
+                  "LEGACY",
+                  "MOBILE",
+                  "CHOICE",
+                  "TICKET_MANAGER",
+                  "DELIVERY",
+                  "LOYALTY_SALES"
+                ]
+              }
+            },
+            {
+              "name": "sub-channel-id",
+              "in": "header",
+              "description": "Sub-Channel IDs identify the sub channel under the selling channel.",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "MOBILE",
+                  "WEB",
+                  "ONE_INSPIRE",
+                  "COAST",
+                  "CALL4WINGS",
+                  "TICKET_MANAGER",
+                  "IAC",
+                  "VROMO"
+                ]
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryUpdateRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Delivery updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UpdateStatusResult"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/brand/{brandId}/delivery/{deliveryId}/cancel": {
+        "post": {
+          "tags": [
+            "delivery-operations"
+          ],
+          "summary": "Cancel delivery",
+          "operationId": "cancelDelivery",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "description": "Official brand ID. See https://inspirebrands.atlassian.net/wiki/spaces/DBBP/pages/863404137/Official+Brand+IDs",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ARB",
+                  "BWW",
+                  "JJE",
+                  "RTO",
+                  "SDI",
+                  "DUN",
+                  "BRO"
+                ]
+              }
+            },
+            {
+              "name": "channel-id",
+              "in": "header",
+              "description": "Digital Channel ID",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "WEBOA",
+                  "MOBILE_IOS",
+                  "MOBILE_ANDROID",
+                  "STORE",
+                  "LEGACY_WEBOA",
+                  "LEGACY_MOBILE_IOS",
+                  "LEGACY_MOBILE_ANDROID",
+                  "CUSTOMER_SUPPORT",
+                  "RAP",
+                  "LEGACY",
+                  "MOBILE",
+                  "CHOICE",
+                  "TICKET_MANAGER",
+                  "DELIVERY",
+                  "LOYALTY_SALES"
+                ]
+              }
+            },
+            {
+              "name": "deliveryId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            {
+              "name": "sub-channel-id",
+              "in": "header",
+              "description": "Sub-Channel IDs identify the sub channel under the selling channel.",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "MOBILE",
+                  "WEB",
+                  "ONE_INSPIRE",
+                  "COAST",
+                  "CALL4WINGS",
+                  "TICKET_MANAGER",
+                  "IAC",
+                  "VROMO"
+                ]
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelDeliveryRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Delivery was cancelled successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CancelDeliveryResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CancelDeliveryResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Delivery not found error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "System error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Service Unavailable",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                },
+                "*/*": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/brand/{brandId}/delivery/validate": {
+        "post": {
+          "tags": [
+            "delivery-operations"
+          ],
+          "summary": "Validate delivery address",
+          "operationId": "validateDeliveryAddress",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "description": "Official brand ID. See https://inspirebrands.atlassian.net/wiki/spaces/DBBP/pages/863404137/Official+Brand+IDs",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ARB",
+                  "BWW",
+                  "JJE",
+                  "RTO",
+                  "SDI",
+                  "DUN",
+                  "BRO"
+                ]
+              }
+            },
+            {
+              "name": "channel-id",
+              "in": "header",
+              "description": "Digital Channel ID",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "WEBOA",
+                  "MOBILE_IOS",
+                  "MOBILE_ANDROID",
+                  "STORE",
+                  "LEGACY_WEBOA",
+                  "LEGACY_MOBILE_IOS",
+                  "LEGACY_MOBILE_ANDROID",
+                  "CUSTOMER_SUPPORT",
+                  "RAP",
+                  "LEGACY",
+                  "MOBILE",
+                  "CHOICE",
+                  "TICKET_MANAGER",
+                  "DELIVERY",
+                  "LOYALTY_SALES"
+                ]
+              }
+            },
+            {
+              "name": "sub-channel-id",
+              "in": "header",
+              "description": "Sub-Channel IDs identify the sub channel under the selling channel.",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "MOBILE",
+                  "WEB",
+                  "ONE_INSPIRE",
+                  "COAST",
+                  "CALL4WINGS",
+                  "TICKET_MANAGER",
+                  "IAC",
+                  "VROMO"
+                ]
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryValidationRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successfully delivery validation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DeliveryValidationResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Pickup Location not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/brand/{brandId}/delivery/estimate": {
+        "post": {
+          "tags": [
+            "delivery-operations"
+          ],
+          "summary": "Request time and fee estimates for the delivery.",
+          "operationId": "estimateDelivery",
+          "parameters": [
+            {
+              "name": "brandId",
+              "in": "path",
+              "description": "Official brand ID. See https://inspirebrands.atlassian.net/wiki/spaces/DBBP/pages/863404137/Official+Brand+IDs",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ARB",
+                  "BWW",
+                  "JJE",
+                  "RTO",
+                  "SDI",
+                  "DUN",
+                  "BRO"
+                ]
+              }
+            },
+            {
+              "name": "channel-id",
+              "in": "header",
+              "description": "Digital Channel ID",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "WEBOA",
+                  "MOBILE_IOS",
+                  "MOBILE_ANDROID",
+                  "STORE",
+                  "LEGACY_WEBOA",
+                  "LEGACY_MOBILE_IOS",
+                  "LEGACY_MOBILE_ANDROID",
+                  "CUSTOMER_SUPPORT",
+                  "RAP",
+                  "LEGACY",
+                  "MOBILE",
+                  "CHOICE",
+                  "TICKET_MANAGER",
+                  "DELIVERY",
+                  "LOYALTY_SALES"
+                ]
+              }
+            },
+            {
+              "name": "sub-channel-id",
+              "in": "header",
+              "description": "Sub-Channel IDs identify the sub channel under the selling channel.",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "MOBILE",
+                  "WEB",
+                  "ONE_INSPIRE",
+                  "COAST",
+                  "CALL4WINGS",
+                  "TICKET_MANAGER",
+                  "IAC",
+                  "VROMO"
+                ]
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateDeliveryRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successfully delivery estimates",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/EstimateDeliveryResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Pickup Location not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "ErrorInfo": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "brand": {
+              "type": "string"
+            },
+            "reasonCode": {
+              "type": "string"
+            },
+            "severity": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Response errors. Request processing errors details."
+        },
+        "ErrorResponseDto": {
+          "required": [
+            "errorMessage",
+            "errors",
+            "path",
+            "referenceId"
+          ],
+          "type": "object",
+          "properties": {
+            "referenceId": {
+              "type": "string",
+              "description": "Error identifier",
+              "example": "123"
+            },
+            "path": {
+              "type": "string",
+              "description": "Failed resource path",
+              "example": "123"
+            },
+            "errorMessage": {
+              "type": "string",
+              "description": "Error message",
+              "example": "Invalid order"
+            },
+            "errors": {
+              "type": "array",
+              "description": "Response errors. Request processing errors details.",
+              "items": {
+                "$ref": "#/components/schemas/ErrorInfo"
+              }
+            }
+          }
+        },
+        "CircuitBreakerResponseDto": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "CLOSED",
+                "DISABLED"
+              ]
+            }
+          }
+        },
+        "DeliveryAddressResponse": {
+          "type": "object",
+          "properties": {
+            "addressLine1": {
+              "type": "string",
+              "description": "Street for the address",
+              "example": "5025 Excelsior Blvd."
+            },
+            "addressLine2": {
+              "type": "string",
+              "description": "Suite, Apartment or Unit number of the address",
+              "example": "Suite #600"
+            },
+            "city": {
+              "type": "string",
+              "description": "City for the address",
+              "example": "St. Louis Park"
+            },
+            "state": {
+              "type": "string",
+              "description": "State for the address",
+              "example": "Minnesota"
+            },
+            "zipCode": {
+              "type": "string",
+              "description": "Zipcode for the address",
+              "example": "55416"
+            }
+          },
+          "description": "Address for the delivery"
+        },
+        "ScheduleDeliveryResponse": {
+          "type": "object",
+          "properties": {
+            "deliveryId": {
+              "type": "integer",
+              "description": "The id of the delivery system",
+              "format": "int64"
+            },
+            "status": {
+              "type": "string",
+              "description": "The status of the delivery",
+              "example": "scheduled"
+            },
+            "dasherStatus": {
+              "type": "string",
+              "description": "The status of the dasher",
+              "example": "unassigned"
+            },
+            "statusUrl": {
+              "type": "string",
+              "description": "Tracking page for the delivery",
+              "example": "http://drd.sh/d035NtWrk/"
+            },
+            "instructionsFromCustomer": {
+              "type": "string",
+              "description": "Instructions for dasher at the time of delivery drop off",
+              "example": "Please call me to buzz you in"
+            },
+            "deliveryAddress": {
+              "$ref": "#/components/schemas/DeliveryAddressResponse"
+            },
+            "estimatedPickupTime": {
+              "type": "string",
+              "description": "Estimated pickup time"
+            },
+            "estimatedDeliveryTime": {
+              "type": "string",
+              "description": "Estimated delivery time"
+            },
+            "customerName": {
+              "type": "string",
+              "description": "The full name of the customer creating the delivery",
+              "example": "Jane Goodall"
+            },
+            "customerPhoneNumber": {
+              "type": "string",
+              "description": "A valid phone number of the customer",
+              "example": "+16505555555"
+            },
+            "deliveryFee": {
+              "type": "integer",
+              "description": "Delivery Fees in cents. i.e. 1940 equals $19.40",
+              "format": "int64",
+              "example": 1940
+            },
+            "driverTip": {
+              "type": "integer",
+              "description": "The amount to tip the Driver in cents i.e. $5.00 = 500",
+              "format": "int32",
+              "example": 500
+            }
+          }
+        },
+        "ErrorModel": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error Code returned by Service",
+              "example": "C10001"
+            },
+            "message": {
+              "type": "string",
+              "description": "Error Message",
+              "example": "Invalid email address"
+            },
+            "source": {
+              "type": "string",
+              "description": "Source service where the error occurred, eg: CustomerDomainService",
+              "example": "CustomerDomainService"
+            },
+            "brand": {
+              "type": "string",
+              "description": "Brand ID",
+              "example": "ARB",
+              "enum": [
+                "ARB",
+                "BWW",
+                "SDI",
+                "JJE",
+                "RTO",
+                "DUN",
+                "BRO"
+              ]
+            },
+            "reasonCode": {
+              "type": "string",
+              "description": "Internal Reason code for the error",
+              "example": "CDS_INVALID_REQUEST"
+            },
+            "severity": {
+              "type": "integer",
+              "description": "Error Severity",
+              "format": "int32",
+              "example": 1
+            }
+          },
+          "description": "Response errors. Request processing errors details."
+        },
+        "ErrorResponse": {
+          "required": [
+            "errors"
+          ],
+          "type": "object",
+          "properties": {
+            "referenceId": {
+              "type": "string",
+              "description": "Error identifier",
+              "example": "0f5737b3-bfaa-4d60-b94b-2cb4d716b06f"
+            },
+            "path": {
+              "type": "string",
+              "description": "Failed resource path",
+              "example": "/brand/BWW/some/resource/path"
+            },
+            "errorMessage": {
+              "type": "string",
+              "description": "Error message",
+              "example": "Something is wrong"
+            },
+            "errors": {
+              "type": "array",
+              "description": "Response errors. Request processing errors details.",
+              "items": {
+                "$ref": "#/components/schemas/ErrorModel"
+              }
+            }
+          }
+        },
+        "ContactDetailRequest": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "description": "Who is going to pickup the order - first name.",
+              "example": "John"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Who is going to pickup the order - last name.",
+              "example": "Doe"
+            },
+            "email": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string",
+              "description": "Contact email address to use for the order.",
+              "example": "example@mail.com"
+            },
+            "phoneNumber": {
+              "maxLength": 25,
+              "minLength": 0,
+              "type": "string",
+              "description": "Contact phone number to use for the order.",
+              "example": "+16505555555"
+            },
+            "deliveryAddress": {
+              "$ref": "#/components/schemas/DeliveryAddressRequest2"
+            },
+            "instructions": {
+              "type": "array",
+              "items": {
+                "maxLength": 255,
+                "minLength": 0,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "DeliveryAddressRequest2": {
+          "type": "object",
+          "properties": {
+            "address1": {
+              "type": "string",
+              "description": "Street for location",
+              "example": "5160 Windward Pkwy"
+            },
+            "address2": {
+              "type": "string",
+              "description": "Suite, Apartment or Unit number for location"
+            },
+            "city": {
+              "type": "string",
+              "description": "City for location",
+              "example": "St. Louis Park"
+            },
+            "stateCode": {
+              "maxLength": 2,
+              "minLength": 0,
+              "type": "string",
+              "description": "The state code. 2 characters max",
+              "example": "MN"
+            },
+            "country": {
+              "maxLength": 2,
+              "minLength": 0,
+              "type": "string",
+              "description": "The country. 2 characters max",
+              "example": "US"
+            },
+            "postalCode": {
+              "maxLength": 10,
+              "minLength": 0,
+              "type": "string",
+              "description": "The postal code. 10 characters maxn",
+              "example": "55416"
+            },
+            "coordinates": {
+              "$ref": "#/components/schemas/DeliveryCoordinatesRequest"
+            }
+          },
+          "description": "Location of the delivery"
+        },
+        "DeliveryCoordinatesRequest": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "format": "double",
+              "example": 33.9354
+            },
+            "lon": {
+              "type": "number",
+              "format": "double",
+              "example": 33.9354
+            }
+          }
+        },
+        "DeliveryModifierGroupRequest": {
+          "type": "object",
+          "properties": {
+            "modifiers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeliveryModifierRequest"
+              }
+            }
+          }
+        },
+        "DeliveryModifierRequest": {
+          "required": [
+            "description"
+          ],
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description of order item modifier",
+              "example": "Harvest Wheat Bun"
+            },
+            "quantity": {
+              "type": "integer",
+              "description": "Modifier's quantity",
+              "format": "int32",
+              "example": 1
+            }
+          }
+        },
+        "DeliveryOrderFulfillmentRequest": {
+          "type": "object",
+          "properties": {
+            "driverPickupTime": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "fulfillmentTime": {
+              "type": "string",
+              "description": "The time the order is to be delivered.",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "contactDetails": {
+              "$ref": "#/components/schemas/ContactDetailRequest"
+            }
+          },
+          "description": "Fulfillment information"
+        },
+        "DeliveryOrderItemRequest": {
+          "required": [
+            "description"
+          ],
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description of order item",
+              "example": "classy order item"
+            },
+            "modifierGroups": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeliveryModifierGroupRequest"
+              }
+            },
+            "quantity": {
+              "type": "integer",
+              "description": "Item's quantity",
+              "format": "int32",
+              "example": 1
+            },
+            "childItems": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeliveryOrderItemRequest"
+              }
+            }
+          }
+        },
+        "DeliveryTipsRequest": {
+          "type": "object",
+          "properties": {
+            "driverTip": {
+              "type": "number",
+              "description": "Driver fee",
+              "example": 0.13
+            },
+            "serverTip": {
+              "type": "number",
+              "description": "Driver fee",
+              "example": 0.13
+            }
+          }
+        },
+        "ScheduleDeliveryRequest": {
+          "required": [
+            "fulfillment",
+            "id",
+            "idempotentId",
+            "subTotal",
+            "total"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 100001
+            },
+            "idempotentId": {
+              "type": "string",
+              "example": "633c2c5d-27c6-4744-bf55-b9a7cb58fe02"
+            },
+            "total": {
+              "type": "number",
+              "description": "The total amount",
+              "example": 12.25
+            },
+            "subTotal": {
+              "type": "number",
+              "description": "The subtotal for all items in the order, excluding tax/tip",
+              "example": 10.25
+            },
+            "fulfillment": {
+              "$ref": "#/components/schemas/DeliveryOrderFulfillmentRequest"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeliveryOrderItemRequest"
+              }
+            },
+            "tips": {
+              "$ref": "#/components/schemas/DeliveryTipsRequest"
+            },
+            "containsAlcohol": {
+              "type": "boolean",
+              "description": "Marks if order items contain alcohol"
+            }
+          }
+        },
+        "UpdateStatusResult": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Result message to Vromo system",
+              "example": "ACK"
+            },
+            "messageId": {
+              "type": "string",
+              "description": "Id of result message"
+            }
+          }
+        },
+        "Audit": {
+          "type": "object",
+          "properties": {
+            "user": {
+              "$ref": "#/components/schemas/User"
+            },
+            "type": {
+              "type": "string",
+              "example": "dispatcher"
+            }
+          }
+        },
+        "AutodispatchInfo": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AutodispatchInfoItem"
+              }
+            }
+          }
+        },
+        "AutodispatchInfoItem": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "noMoreOverflowProvidersAvailableToDispatchTo": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Campaign": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 0
+            }
+          }
+        },
+        "Cancelled": {
+          "type": "object",
+          "properties": {
+            "audit": {
+              "$ref": "#/components/schemas/Audit"
+            },
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "note": {
+              "type": "string"
+            },
+            "reason": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          }
+        },
+        "Completed": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            }
+          }
+        },
+        "Contact": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string",
+              "example": "61466601706"
+            },
+            "name": {
+              "type": "string",
+              "example": "Andrew Walker"
+            },
+            "email": {
+              "type": "string",
+              "example": "a.walker@mail.com"
+            }
+          }
+        },
+        "Coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "format": "double",
+              "example": 116.00299999999993
+            },
+            "lon": {
+              "type": "number",
+              "format": "double",
+              "example": -31.942
+            }
+          }
+        },
+        "CourierInfo": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CourierInfoItem"
+              }
+            }
+          }
+        },
+        "CourierInfoItem": {
+          "type": "object",
+          "properties": {
+            "courierName": {
+              "type": "string"
+            },
+            "courierPhoneNumber": {
+              "type": "string"
+            },
+            "externalId": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "vehicleType": {
+              "type": "string"
+            },
+            "dropoffEta": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "pickupEta": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "fleetJobId": {
+              "type": "string"
+            }
+          }
+        },
+        "DeliveryUpdateRequest": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/WebHookItem"
+              }
+            }
+          }
+        },
+        "DispatchItem": {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059855129
+            },
+            "job": {
+              "$ref": "#/components/schemas/DispatchJob"
+            },
+            "type": {
+              "type": "string",
+              "example": "dispatched"
+            },
+            "vehicle": {
+              "$ref": "#/components/schemas/Vehicle"
+            }
+          }
+        },
+        "DispatchJob": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059855129
+            }
+          }
+        },
+        "Dispatches": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DispatchItem"
+              }
+            }
+          }
+        },
+        "JobAttr": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobAttrItem"
+              }
+            }
+          }
+        },
+        "JobAttrItem": {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059855120
+            },
+            "value": {
+              "type": "string",
+              "example": "500"
+            },
+            "key": {
+              "type": "string",
+              "example": "{\"Some info\":null}"
+            }
+          }
+        },
+        "JobTaskItem": {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "id": {
+              "type": "string",
+              "example": "6059855119"
+            },
+            "ix": {
+              "type": "integer",
+              "format": "int64",
+              "example": 0
+            },
+            "merge": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "zone": {
+              "$ref": "#/components/schemas/JobZone"
+            },
+            "completed": {
+              "$ref": "#/components/schemas/Completed"
+            }
+          }
+        },
+        "JobTasks": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobTaskItem"
+              }
+            },
+            "type": {
+              "type": "string",
+              "example": "update"
+            }
+          }
+        },
+        "JobZone": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "example": "High Wycombe WA, Australia"
+            },
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "name": {
+              "type": "string",
+              "example": "Andrew Walker"
+            },
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059855130
+            },
+            "radius": {
+              "type": "number",
+              "format": "float",
+              "example": 50
+            },
+            "coords": {
+              "$ref": "#/components/schemas/Coordinates"
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "Reason": {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059855129
+            },
+            "name": {
+              "type": "string",
+              "example": "Delivery outside radius"
+            },
+            "type": {
+              "type": "string",
+              "example": "cancelled"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 13433822413057
+            }
+          }
+        },
+        "Vehicle": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059834126
+            }
+          }
+        },
+        "WebHookItem": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "6059855129"
+            },
+            "external": {
+              "type": "string",
+              "example": "15aaedf-b9b3-416e-937e-43329ab221cb"
+            },
+            "status": {
+              "type": "string",
+              "example": "dispatched"
+            },
+            "dispatches": {
+              "$ref": "#/components/schemas/Dispatches"
+            },
+            "finished": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "merge": {
+              "type": "string",
+              "example": "update"
+            },
+            "audit": {
+              "$ref": "#/components/schemas/Audit"
+            },
+            "cancelled": {
+              "$ref": "#/components/schemas/Cancelled"
+            },
+            "created": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            },
+            "tracking": {
+              "type": "string",
+              "example": "https://vrom.io/M8_Sp27zG"
+            },
+            "contact": {
+              "$ref": "#/components/schemas/Contact"
+            },
+            "name": {
+              "type": "string",
+              "example": "Job name"
+            },
+            "campaign": {
+              "$ref": "#/components/schemas/Campaign"
+            },
+            "attr": {
+              "$ref": "#/components/schemas/JobAttr"
+            },
+            "tasks": {
+              "$ref": "#/components/schemas/JobTasks"
+            },
+            "group": {
+              "type": "integer",
+              "format": "int64",
+              "example": 6059562777
+            },
+            "progress": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1
+            },
+            "courierInfo": {
+              "$ref": "#/components/schemas/CourierInfo"
+            },
+            "autodispatchInfo": {
+              "$ref": "#/components/schemas/AutodispatchInfo"
+            }
+          }
+        },
+        "CancelDeliveryResponse": {
+          "type": "object",
+          "properties": {
+            "returnInitiated": {
+              "type": "boolean",
+              "example": true
+            },
+            "cancelledAt": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-04-05T14:30:40.666Z"
+            }
+          }
+        },
+        "CancelDeliveryRequest": {
+          "required": [
+            "order"
+          ],
+          "type": "object",
+          "properties": {
+            "order": {
+              "$ref": "#/components/schemas/CancelOrderDelivery"
+            }
+          }
+        },
+        "CancelOrderDelivery": {
+          "required": [
+            "status"
+          ],
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "example": "CANCELLED",
+              "enum": [
+                "CANCELLED"
+              ]
+            },
+            "statusReason": {
+              "type": "string",
+              "example": "CANCELLED_BY_CUSTOMER",
+              "enum": [
+                "CANCELLED_BY_POS",
+                "CANCELLED_BY_CUSTOMER",
+                "CANCELLED_BY_SYSTEM"
+              ]
+            }
+          }
+        },
+        "DeliveryValidationResponse": {
+          "required": [
+            "pickupLocations"
+          ],
+          "type": "object",
+          "properties": {
+            "pickupLocations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PickupLocationResponse"
+              }
+            }
+          }
+        },
+        "PickupLocationResponse": {
+          "required": [
+            "id"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "43654576"
+            },
+            "isPreffered": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "ContactDetailsPickupRequest": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "email",
+              "example": "test@gmail.com"
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone",
+              "example": "+1111111111111"
+            },
+            "fax": {
+              "type": "string",
+              "description": "Fax",
+              "example": "+1111111111111"
+            },
+            "address": {
+              "$ref": "#/components/schemas/PickupAddressRequest"
+            }
+          }
+        },
+        "CoordinatesRequest": {
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "format": "double",
+              "example": 33.9354
+            },
+            "lon": {
+              "type": "number",
+              "format": "double",
+              "example": 33.9354
+            }
+          }
+        },
+        "DeliveryAddressRequest": {
+          "type": "object",
+          "properties": {
+            "line1": {
+              "type": "string",
+              "description": "Address Line 1",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "line2": {
+              "type": "string",
+              "description": "Address Line 2",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "line3": {
+              "type": "string",
+              "description": "Address Line 2",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "postalCode": {
+              "type": "string",
+              "description": "Postal Code",
+              "example": "11111"
+            },
+            "cityName": {
+              "type": "string",
+              "description": "City name",
+              "example": "Atlanta"
+            },
+            "stateProvinceName": {
+              "type": "string",
+              "description": "State name",
+              "example": "Georgia"
+            },
+            "stateProvinceCode": {
+              "type": "string",
+              "description": "State code",
+              "example": "GA"
+            },
+            "countryName": {
+              "type": "string",
+              "description": "Country name",
+              "example": "USA"
+            },
+            "countryCode": {
+              "type": "string",
+              "description": "Country code",
+              "example": "US"
+            }
+          }
+        },
+        "DeliveryDetailsRequest": {
+          "required": [
+            "locationDetails"
+          ],
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string",
+              "description": "Delivery time",
+              "example": "2024-04-15T15:00:40.666Z"
+            },
+            "locationDetails": {
+              "$ref": "#/components/schemas/DeliveryLocationRequest"
+            }
+          }
+        },
+        "DeliveryLocationRequest": {
+          "required": [
+            "address",
+            "coordinates"
+          ],
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "$ref": "#/components/schemas/CoordinatesRequest"
+            },
+            "address": {
+              "$ref": "#/components/schemas/DeliveryAddressRequest"
+            }
+          }
+        },
+        "DeliveryValidationRequest": {
+          "required": [
+            "deliveryDetails",
+            "pickupDetails"
+          ],
+          "type": "object",
+          "properties": {
+            "pickupDetails": {
+              "$ref": "#/components/schemas/ValidateDeliveryPickupDetailsRequest"
+            },
+            "deliveryDetails": {
+              "$ref": "#/components/schemas/DeliveryDetailsRequest"
+            }
+          }
+        },
+        "PickupAddressRequest": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "Label",
+              "example": "Sonic"
+            },
+            "line1": {
+              "type": "string",
+              "description": "Address Line 1",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "line2": {
+              "type": "string",
+              "description": "Address Line 2",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "line3": {
+              "type": "string",
+              "description": "Address Line 2",
+              "example": "5025 Excelsior Blvd., Atlanta, GA"
+            },
+            "referencePoint": {
+              "type": "string",
+              "description": "Reference Point"
+            },
+            "postalCode": {
+              "type": "string",
+              "description": "Postal Code",
+              "example": "11111"
+            },
+            "cityName": {
+              "type": "string",
+              "description": "City name",
+              "example": "Atlanta"
+            },
+            "stateProvinceName": {
+              "type": "string",
+              "description": "State name",
+              "example": "Georgia"
+            },
+            "stateProvinceCode": {
+              "type": "string",
+              "description": "State code",
+              "example": "GA"
+            },
+            "countryName": {
+              "type": "string",
+              "description": "Country name",
+              "example": "USA"
+            },
+            "countryCode": {
+              "type": "string",
+              "description": "Country code",
+              "example": "US"
+            }
+          }
+        },
+        "PickupLocationRequest": {
+          "required": [
+            "contactDetails",
+            "coordinates",
+            "id"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "14354678"
+            },
+            "time": {
+              "type": "string",
+              "description": "Delivery time",
+              "example": "2024-04-15T15:00:40.661Z"
+            },
+            "coordinates": {
+              "$ref": "#/components/schemas/CoordinatesRequest"
+            },
+            "contactDetails": {
+              "$ref": "#/components/schemas/ContactDetailsPickupRequest"
+            }
+          }
+        },
+        "ValidateDeliveryPickupDetailsRequest": {
+          "required": [
+            "locations"
+          ],
+          "type": "object",
+          "properties": {
+            "locations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PickupLocationRequest"
+              }
+            }
+          }
+        },
+        "EstimateDeliveryResponse": {
+          "type": "object",
+          "properties": {
+            "pickupTime": {
+              "type": "string",
+              "description": "Estimated time for order pickup",
+              "example": "2021-04-28T18:10:58Z"
+            },
+            "deliveryTime": {
+              "type": "string",
+              "description": "Estimated time of delivery",
+              "example": "2021-04-28T17:20:28Z"
+            },
+            "fee": {
+              "type": "number",
+              "description": "Delivery fees",
+              "example": 19.4
+            },
+            "currency": {
+              "type": "string",
+              "description": "Currency for the delivery fees",
+              "example": "USD"
+            },
+            "id": {
+              "type": "number",
+              "description": "Id of the delivery estimate"
+            }
+          }
+        },
+        "EstimateDeliveryRequest": {
+          "required": [
+            "deliveryDetails",
+            "order",
+            "pickupDetails"
+          ],
+          "type": "object",
+          "properties": {
+            "pickupDetails": {
+              "$ref": "#/components/schemas/PickupLocationRequest"
+            },
+            "deliveryDetails": {
+              "$ref": "#/components/schemas/DeliveryDetailsRequest"
+            },
+            "order": {
+              "$ref": "#/components/schemas/OrderDetailsRequest"
+            }
+          }
+        },
+        "OrderDetailsRequest": {
+          "required": [
+            "subTotal"
+          ],
+          "type": "object",
+          "properties": {
+            "subTotal": {
+              "minimum": 0,
+              "exclusiveMinimum": false,
+              "type": "number",
+              "description": "The subtotal for all items in the order, excluding tax/tip, in dollars",
+              "example": 19.99
+            }
+          }
+        }
+      }
+    }
+  }
+  
