@@ -1,0 +1,10 @@
+# Ignore report files
+/reports/
+/reports/*.html
+/reports/*.xml
+/reports/*.json
+
+# Other common ignores
+/target/
+/.idea/
+/*.log
