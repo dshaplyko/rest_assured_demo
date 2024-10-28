@@ -1,99 +1,59 @@
 package com.example;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.apache.commons.io.IOUtils;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class AppTest {
 
-    private Properties config;
-
-    @BeforeClass
-    public void setUp() throws IOException {
-        config = new Properties();
-        FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
-        config.load(fis);
-        RestAssured.baseURI = config.getProperty("baseUrl");
-    }
-
-    // Helper method to read JSON file as a String
-    private String readFileAsString(String fileName) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return IOUtils.toString(classLoader.getResourceAsStream(fileName), StandardCharsets.UTF_8);
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "https://fulfillment-adapter-v1.snc-api.qa.irb.digital";
     }
 
     @Test
-    public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+    public void testUpdateDeliveryStatus() {
+        String requestBody = "{\n" +
+                "  \"type\": \"update\",\n" +
+                "  \"items\": [\n" +
+                "    {\n" +
+                "      \"id\": \"6059855129\",\n" +
+                "      \"external\": \"15aaedf-b9b3-416e-937e-43329ab221cb\",\n" +
+                "      \"status\": \"dispatched\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
 
-        Response response = given()
+        given()
                 .header("channel-id", "WEBOA")
                 .header("sub-channel-id", "WEB")
-                .header("Content-type", "application/json")
-                .and()
+                .pathParam("brandId", "ARB")
+                .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
-                .post("/brand/SDI/delivery/estimate")
+                .post("/brand/{brandId}/delivery")
                 .then()
-                .statusCode(201)
-                .extract()
-                .response();
-
-        String responseBody = response.getBody().asString();
-        System.out.println(responseBody);
-
-        // Assertions based on expected response structure
-        Assert.assertTrue(responseBody.contains("\"pickupDetails\":"));
-        Assert.assertTrue(responseBody.contains("\"deliveryDetails\":"));
-        Assert.assertTrue(responseBody.contains("\"order\":"));
-
-        // Extract and validate specific fields
-        String pickupId = response.path("pickupDetails.id");
-        Assert.assertEquals(pickupId, "9972", "Mismatch in pickupDetails.id");
-
-        Float subTotal = response.path("order.subTotal");
-        Assert.assertEquals(subTotal, Float.valueOf(19.99f), "Mismatch in order.subTotal");
+                .statusCode(200)
+                .body("message", equalTo("ACK"));
     }
 
     @Test
-    public void testPostDeliveryValidate() throws IOException {
-        String requestBody = readFileAsString("request/PostValidateRequest.json");
-
-        Response response = given()
+    public void testUpdateDeliveryStatusFromFile() {
+        given()
                 .header("channel-id", "WEBOA")
-                .header("sub-channel-id", "MOBILE")
-                .header("Content-type", "application/json")
-                .and()
-                .body(requestBody)
+                .header("sub-channel-id", "WEB")
+                .pathParam("brandId", "ARB")
+                .contentType(ContentType.JSON)
+                .body(new File("src/test/resources/request/updateDeliveryStatus.json"))
                 .when()
-                .post("/brand/SDI/delivery/validate")
+                .post("/brand/{brandId}/delivery")
                 .then()
-                .statusCode(201)
-                .extract()
-                .response();
-
-        String responseBody = response.getBody().asString();
-        System.out.println(responseBody);
-
-        // Placeholder assertions; adapt to match your actual response structure and content
-        Assert.assertTrue(responseBody.contains("\"pickupDetails\":"));
-        Assert.assertTrue(responseBody.contains("\"deliveryDetails\":"));
-
-        // Example assertions for nested fields
-        String firstPickupId = response.path("pickupDetails.locations[0].id");
-        Assert.assertEquals(firstPickupId, "9972", "Mismatch in first location id");
-
-        String secondPickupCity = response.path("pickupDetails.locations[1].contactDetails.address.cityName");
-        Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup city name");
+                .statusCode(200)
+                .body("message", equalTo("ACK"));
     }
 }
