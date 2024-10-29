@@ -96,4 +96,68 @@ public class AppTest {
         String secondPickupCity = response.path("pickupDetails.locations[1].contactDetails.address.cityName");
         Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup city name");
     }
+
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+
+        // Extract and validate specific fields
+        String deliveryId = response.path("deliveryId");
+        Assert.assertNotNull(deliveryId, "Delivery ID should not be null");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in delivery status");
+    }
+
+    @Test
+    public void testPostCancelDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostCancelDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/123/cancel")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"returnInitiated\":"));
+        Assert.assertTrue(responseBody.contains("\"cancelledAt\":"));
+
+        // Extract and validate specific fields
+        Boolean returnInitiated = response.path("returnInitiated");
+        Assert.assertTrue(returnInitiated, "Return should be initiated");
+
+        String cancelledAt = response.path("cancelledAt");
+        Assert.assertNotNull(cancelledAt, "CancelledAt should not be null");
+    }
 }
