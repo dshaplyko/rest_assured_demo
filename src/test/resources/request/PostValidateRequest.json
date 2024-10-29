@@ -1,0 +1,42 @@
+{
+  "pickupDetails": {
+    "locations": [
+      {
+        "id": "9972",
+        "time": "2024-04-15T15:00:40.661Z",
+        "coordinates": {
+          "lat": 33.9354,
+          "lon": -84.3400
+        },
+        "contactDetails": {
+          "email": "test@gmail.com",
+          "phone": "+1111111111111",
+          "address": {
+            "label": "Sonic",
+            "line1": "5025 Excelsior Blvd.",
+            "cityName": "Atlanta",
+            "stateProvinceCode": "GA",
+            "countryCode": "US",
+            "postalCode": "11111"
+          }
+        }
+      }
+    ]
+  },
+  "deliveryDetails": {
+    "time": "2024-04-15T16:00:40.661Z",
+    "locationDetails": {
+      "coordinates": {
+        "lat": 33.9354,
+        "lon": -84.3400
+      },
+      "address": {
+        "line1": "5025 Excelsior Blvd.",
+        "cityName": "Atlanta",
+        "stateProvinceCode": "GA",
+        "countryCode": "US",
+        "postalCode": "11111"
+      }
+    }
+  }
+}
