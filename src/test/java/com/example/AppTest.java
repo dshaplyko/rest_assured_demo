@@ -24,13 +24,77 @@ public class AppTest {
         FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
         config.load(fis);
         RestAssured.baseURI = config.getProperty("baseUrl");
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+
+        // Extract and validate specific fields
+        int deliveryId = response.path("deliveryId");
+        Assert.assertEquals(deliveryId, 12345, "Mismatch in deliveryId");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in status");
     }
+}
 
     // Helper method to read JSON file as a String
     private String readFileAsString(String fileName) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         return IOUtils.toString(classLoader.getResourceAsStream(fileName), StandardCharsets.UTF_8);
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+
+        // Extract and validate specific fields
+        int deliveryId = response.path("deliveryId");
+        Assert.assertEquals(deliveryId, 12345, "Mismatch in deliveryId");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in status");
     }
+}
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
@@ -63,7 +127,39 @@ public class AppTest {
 
         Float subTotal = response.path("order.subTotal");
         Assert.assertEquals(subTotal, Float.valueOf(19.99f), "Mismatch in order.subTotal");
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+
+        // Extract and validate specific fields
+        int deliveryId = response.path("deliveryId");
+        Assert.assertEquals(deliveryId, 12345, "Mismatch in deliveryId");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in status");
     }
+}
 
     @Test
     public void testPostDeliveryValidate() throws IOException {
@@ -95,5 +191,69 @@ public class AppTest {
 
         String secondPickupCity = response.path("pickupDetails.locations[1].contactDetails.address.cityName");
         Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup city name");
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+
+        // Extract and validate specific fields
+        int deliveryId = response.path("deliveryId");
+        Assert.assertEquals(deliveryId, 12345, "Mismatch in deliveryId");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in status");
+    }
+}
+@Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+
+        // Extract and validate specific fields
+        int deliveryId = response.path("deliveryId");
+        Assert.assertEquals(deliveryId, 12345, "Mismatch in deliveryId");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "scheduled", "Mismatch in status");
     }
 }
