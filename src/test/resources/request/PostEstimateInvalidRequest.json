@@ -1,0 +1,30 @@
+{
+  "pickupDetails": {
+    "id": "12345",
+    "coordinates": {
+      "lat": 40.712776,
+      "lon": -74.005974
+    },
+    "contactDetails": {
+      "name": "John Doe",
+      "phone": "123-456-7890"
+    }
+  },
+  "deliveryDetails": {
+    "locationDetails": {
+      "coordinates": {
+        "lat": 34.052235,
+        "lon": -118.243683
+      },
+      "address": {
+        "street": "123 Main St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90012"
+      }
+    }
+  },
+  "order": {
+    "subTotal": 100.00
+  }
+}
