@@ -146,4 +146,116 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test(dependsOnMethods = "testPostDeliveryEstimate")
+    public void testPostDeliveryValidate() throws IOException {
+        String requestBody = readFileAsString("request/PostValidateRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "MOBILE")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/validate")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Validate that response contains 'pickupLocations' and it is a non-empty array
+        List<Object> pickupLocations = response.path("pickupLocations");
+        Assert.assertNotNull(pickupLocations, "pickupLocations is null");
+        Assert.assertFalse(pickupLocations.isEmpty(), "pickupLocations should not be empty");
+
+        // Example assertions for nested fields within the first location
+        String firstPickupId = response.path("pickupLocations[0].id");
+        Assert.assertEquals(firstPickupId, "9972", "Mismatch in first pickup location id");
+
+        String firstPickupCity = response.path("pickupLocations[0].contactDetails.address.cityName");
+        Assert.assertEquals(firstPickupCity, "OKLAHOMA CITY", "Mismatch in first pickup location city name");
+
+        // Example assertions for the second location if applicable
+        String secondPickupId = response.path("pickupLocations[1].id");
+        Assert.assertEquals(secondPickupId, "9974", "Mismatch in second pickup location id");
+
+        String secondPickupCity = response.path("pickupLocations[1].contactDetails.address.cityName");
+        Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup location city name");
+
+        // Additional Checks per Specification
+        String deliveryTime = response.path("deliveryDetails.time");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryDetails.time should be in the future");
+
+        String firstPickupTime = response.path("pickupLocations[0].time");
+        Assert.assertTrue(isTimeInFuture(firstPickupTime), "pickupDetails.locations[0].time should be in the future");
+
+        Assert.assertTrue(isTimeAfter(deliveryTime, firstPickupTime), "deliveryDetails.time should be after pickupDetails.locations[0].time");
+    }
+
+    @Test(dependsOnMethods = "testPostDeliveryValidate")
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+
+        // Store delivery ID for subsequent steps
+        deliveryId = response.path("deliveryId");
+    }
+
+    @Test(dependsOnMethods = "testPostScheduleDelivery")
+    public void testPostCancelDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostCancelRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/" + deliveryId + "/cancel")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertEquals(response.path("status"), "CANCELLED", "Mismatch in delivery status");
+    }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
 }
