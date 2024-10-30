@@ -34,7 +34,7 @@ public class AppTest {
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+        String requestBody = readFileAsString("request/PostEstimateRequestNew.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
@@ -59,7 +59,7 @@ public class AppTest {
 
         // Extract and validate specific fields
         String pickupId = response.path("pickupDetails.id");
-        Assert.assertEquals(pickupId, "9972", "Mismatch in pickupDetails.id");
+        Assert.assertEquals(pickupId, "14354678", "Mismatch in pickupDetails.id");
 
         Float subTotal = response.path("order.subTotal");
         Assert.assertEquals(subTotal, Float.valueOf(19.99f), "Mismatch in order.subTotal");
