@@ -1,0 +1,28 @@
+{
+  "id": 12345,
+  "idempotentId": "unique-id-12345",
+  "total": 100.0,
+  "subTotal": 90.0,
+  "fulfillment": {
+    "driverPickupTime": "2023-12-31T23:59:59Z",
+    "fulfillmentTime": "2024-01-01T01:00:00Z"
+  },
+  "items": [
+    {
+      "id": "item-1",
+      "name": "Item 1",
+      "quantity": 1,
+      "price": 50.0
+    },
+    {
+      "id": "item-2",
+      "name": "Item 2",
+      "quantity": 2,
+      "price": 20.0
+    }
+  ],
+  "tips": {
+    "amount": 10.0
+  },
+  "containsAlcohol": false
+}

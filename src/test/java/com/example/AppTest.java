@@ -134,7 +134,53 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(firstPickupTime), "pickupDetails.locations[0].time should be in the future");
 
         Assert.assertTrue(isTimeAfter(deliveryTime, firstPickupTime), "deliveryDetails.time should be after pickupDetails.locations[0].time");
+    @Test
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"scheduledTime\":"));
+
+        // Validating presence and correctness of specific fields
+        String deliveryId = response.path("deliveryId");
+        Assert.assertNotNull(deliveryId, "deliveryId is null");
+
+        String status = response.path("status");
+        Assert.assertEquals(status, "SCHEDULED", "Mismatch in status");
+
+        String scheduledTime = response.path("scheduledTime");
+        Assert.assertNotNull(scheduledTime, "scheduledTime is null");
+        Assert.assertTrue(isTimeInFuture(scheduledTime), "scheduledTime should be in the future");
+
+        // Additional Checks per Specification
+        // Ensure fulfillment times are in the future
+        String driverPickupTime = response.path("fulfillment.driverPickupTime");
+        Assert.assertTrue(isTimeInFuture(driverPickupTime), "driverPickupTime should be in the future");
+
+        String fulfillmentTime = response.path("fulfillment.fulfillmentTime");
+        Assert.assertTrue(isTimeInFuture(fulfillmentTime), "fulfillmentTime should be in the future");
+        Assert.assertTrue(isTimeAfter(fulfillmentTime, driverPickupTime), "fulfillmentTime should be after driverPickupTime");
     }
+
+}
 
     // Utility methods to validate time constraints; Adjust according to specific implementations
     private boolean isTimeInFuture(String time) {
