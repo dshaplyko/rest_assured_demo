@@ -45,7 +45,7 @@ public class AppTest {
                 .when()
                 .post("/brand/SDI/delivery/estimate")
                 .then()
-                .statusCode(201)
+                .statusCode(200)
                 .extract()
                 .response();
 
