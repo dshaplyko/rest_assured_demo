@@ -33,8 +33,8 @@ public class AppTest {
     }
 
     @Test
-    public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+    public void testPostDeliveryEstimate_Valid() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest_Valid.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
@@ -45,7 +45,7 @@ public class AppTest {
                 .when()
                 .post("/brand/SDI/delivery/estimate")
                 .then()
-                .statusCode(201)
+                .statusCode(200)
                 .extract()
                 .response();
 
@@ -63,6 +63,87 @@ public class AppTest {
 
         Float subTotal = response.path("order.subTotal");
         Assert.assertEquals(subTotal, Float.valueOf(19.99f), "Mismatch in order.subTotal");
+    }
+
+    @Test
+    public void testPostDeliveryEstimate_MissingFields() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest_MissingFields.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected error response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
+
+    @Test
+    public void testPostDeliveryEstimate_InvalidValues() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest_InvalidValues.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected error response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
+
+    @Test
+    public void testPostDeliveryEstimate_EdgeCases() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest_EdgeCases.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"pickupDetails\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryDetails\":"));
+        Assert.assertTrue(responseBody.contains("\"order\":"));
+
+        // Extract and validate specific fields
+        String pickupId = response.path("pickupDetails.id");
+        Assert.assertEquals(pickupId, "9972", "Mismatch in pickupDetails.id");
+
+        Float subTotal = response.path("order.subTotal");
+        Assert.assertEquals(subTotal, Float.valueOf(9999999.99f), "Mismatch in order.subTotal");
     }
 
     @Test
