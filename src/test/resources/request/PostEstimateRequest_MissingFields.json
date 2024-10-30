@@ -1,0 +1,19 @@
+{
+  "pickupDetails": {
+    "id": "9972",
+    "coordinates": {
+      "lat": 35.4676,
+      "lon": -97.5164
+    }
+  },
+  "deliveryDetails": {
+    "locationDetails": {
+      "address": {
+        "street": "123 Main St",
+        "city": "Oklahoma City",
+        "state": "OK",
+        "zip": "73101"
+      }
+    }
+  }
+}
