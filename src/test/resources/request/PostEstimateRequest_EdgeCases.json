@@ -1,0 +1,28 @@
+{
+  "pickupDetails": {
+    "id": "9972",
+    "coordinates": {
+      "lat": -90.0000,
+      "lon": 180.0000
+    },
+    "contactDetails": {
+      "name": "John Doe",
+      "phone": "1234567890"
+    },
+    "time": "2023-12-31T23:59:59Z"
+  },
+  "deliveryDetails": {
+    "locationDetails": {
+      "address": {
+        "street": "123 Main St",
+        "city": "Oklahoma City",
+        "state": "OK",
+        "zip": "73101"
+      }
+    },
+    "time": "2024-01-01T01:00:00Z"
+  },
+  "order": {
+    "subTotal": 9999999.99
+  }
+}
