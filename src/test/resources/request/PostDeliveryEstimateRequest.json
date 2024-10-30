@@ -1,0 +1,51 @@
+{
+  "pickupDetails": {
+    "id": "123",
+    "coordinates": {
+      "lat": 40.712776,
+      "lon": -74.005974
+    },
+    "contactDetails": {
+      "email": "pickup@example.com",
+      "phone": "123-456-7890",
+      "fax": "123-456-7891",
+      "address": {
+        "label": "Pickup Location",
+        "line1": "123 Pickup St",
+        "line2": "",
+        "line3": "",
+        "referencePoint": "Near the big tree",
+        "postalCode": "10001",
+        "cityName": "New York",
+        "stateProvinceName": "New York",
+        "stateProvinceCode": "NY",
+        "countryName": "United States",
+        "countryCode": "US"
+      }
+    },
+    "time": "2023-12-31T23:59:59Z"
+  },
+  "deliveryDetails": {
+    "time": "2024-01-01T01:00:00Z",
+    "locationDetails": {
+      "coordinates": {
+        "lat": 34.052235,
+        "lon": -118.243683
+      },
+      "address": {
+        "line1": "456 Delivery Ave",
+        "line2": "",
+        "line3": "",
+        "postalCode": "90001",
+        "cityName": "Los Angeles",
+        "stateProvinceName": "California",
+        "stateProvinceCode": "CA",
+        "countryName": "United States",
+        "countryCode": "US"
+      }
+    }
+  },
+  "order": {
+    "subTotal": 100.00
+  }
+}
