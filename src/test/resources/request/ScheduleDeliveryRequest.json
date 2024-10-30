@@ -1,0 +1,21 @@
+{
+  "fulfillment": {
+    "driverPickupTime": "2023-12-01T10:00:00Z",
+    "fulfillmentTime": "2023-12-01T11:00:00Z"
+  },
+  "id": 100001,
+  "idempotentId": "633c2c5d-27c6-4744-bf55-b9a7cb58fe02",
+  "subTotal": 10.25,
+  "total": 12.25,
+  "items": [
+    {
+      "name": "Pizza",
+      "quantity": 1,
+      "price": 10.25
+    }
+  ],
+  "tips": {
+    "amount": 2.00
+  },
+  "containsAlcohol": false
+}
