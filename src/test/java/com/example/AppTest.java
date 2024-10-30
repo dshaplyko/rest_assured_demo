@@ -88,6 +88,60 @@ public class AppTest {
     }
 
     @Test
+    public void testRequestDeliveryEstimates() throws IOException {
+        String requestBody = readFileAsString("request/PostDeliveryEstimateRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"pickupTime\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryTime\":"));
+        Assert.assertTrue(responseBody.contains("\"fee\":"));
+        Assert.assertTrue(responseBody.contains("\"currency\":"));
+        Assert.assertTrue(responseBody.contains("\"id\":"));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    }
+
+    @Test
     public void testPostDeliveryValidate() throws IOException {
         String requestBody = readFileAsString("request/PostValidateRequest.json");
 
