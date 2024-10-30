@@ -1,0 +1,51 @@
+{
+  "pickupDetails": {
+    "id": "14354678",
+    "time": "2024-04-15T15:00:40.661Z",
+    "coordinates": {
+      "lat": 33.9354,
+      "lon": 33.9354
+    },
+    "contactDetails": {
+      "email": "test@gmail.com",
+      "phone": "+1111111111111",
+      "fax": "+1111111111111",
+      "address": {
+        "label": "Sonic",
+        "line1": "5025 Excelsior Blvd., Atlanta, GA",
+        "line2": "5025 Excelsior Blvd., Atlanta, GA",
+        "line3": "5025 Excelsior Blvd., Atlanta, GA",
+        "referencePoint": "",
+        "postalCode": "11111",
+        "cityName": "Atlanta",
+        "stateProvinceName": "Georgia",
+        "stateProvinceCode": "GA",
+        "countryName": "USA",
+        "countryCode": "US"
+      }
+    }
+  },
+  "deliveryDetails": {
+    "time": "2024-04-15T15:00:40.666Z",
+    "locationDetails": {
+      "coordinates": {
+        "lat": 33.9354,
+        "lon": 33.9354
+      },
+      "address": {
+        "line1": "5025 Excelsior Blvd., Atlanta, GA",
+        "line2": "5025 Excelsior Blvd., Atlanta, GA",
+        "line3": "5025 Excelsior Blvd., Atlanta, GA",
+        "postalCode": "11111",
+        "cityName": "Atlanta",
+        "stateProvinceName": "Georgia",
+        "stateProvinceCode": "GA",
+        "countryName": "USA",
+        "countryCode": "US"
+      }
+    }
+  },
+  "order": {
+    "subTotal": 19.99
+  }
+}

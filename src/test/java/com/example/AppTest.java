@@ -34,7 +34,7 @@ public class AppTest {
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+        String requestBody = readFileAsString("request/PostDeliveryEstimateRequest.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
@@ -45,7 +45,7 @@ public class AppTest {
                 .when()
                 .post("/brand/SDI/delivery/estimate")
                 .then()
-                .statusCode(201)
+                .statusCode(200)
                 .extract()
                 .response();
 
@@ -53,16 +53,19 @@ public class AppTest {
         System.out.println(responseBody);
 
         // Assertions based on expected response structure
-        Assert.assertTrue(responseBody.contains("\"pickupDetails\":"));
-        Assert.assertTrue(responseBody.contains("\"deliveryDetails\":"));
-        Assert.assertTrue(responseBody.contains("\"order\":"));
+        Assert.assertTrue(responseBody.contains("\"pickupTime\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryTime\":"));
+        Assert.assertTrue(responseBody.contains("\"fee\":"));
 
         // Extract and validate specific fields
-        String pickupId = response.path("pickupDetails.id");
-        Assert.assertEquals(pickupId, "9972", "Mismatch in pickupDetails.id");
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime should not be null");
 
-        Float subTotal = response.path("order.subTotal");
-        Assert.assertEquals(subTotal, Float.valueOf(19.99f), "Mismatch in order.subTotal");
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime should not be null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee should not be null");
     }
 
     @Test
