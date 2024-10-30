@@ -25,13 +25,255 @@ public class AppTest {
         FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
         config.load(fis);
         RestAssured.baseURI = config.getProperty("baseUrl");
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
 
     // Helper method to read JSON file as a String
     private String readFileAsString(String fileName) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         return IOUtils.toString(classLoader.getResourceAsStream(fileName), StandardCharsets.UTF_8);
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
@@ -85,7 +327,128 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
 
         // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
 
     @Test
     public void testPostDeliveryValidate() throws IOException {
@@ -134,16 +497,500 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(firstPickupTime), "pickupDetails.locations[0].time should be in the future");
 
         Assert.assertTrue(isTimeAfter(deliveryTime, firstPickupTime), "deliveryDetails.time should be after pickupDetails.locations[0].time");
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
 
     // Utility methods to validate time constraints; Adjust according to specific implementations
     private boolean isTimeInFuture(String time) {
         // Check if the given time (ISO 8601 format) is in the future
         return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
 
     private boolean isTimeAfter(String laterTime, String earlierTime) {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
-    }
+    @Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+}
+@Test
+public void testScheduleDeliverySuccess() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(200)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected response structure
+    Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+    Assert.assertTrue(responseBody.contains("\"status\":"));
+    Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+    Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+    Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+    Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+    Assert.assertTrue(responseBody.contains("\"customerName\":"));
+    Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+    Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+    Assert.assertTrue(responseBody.contains("\"driverTip\":"));
+
+    // Validating presence and correctness of specific fields
+    Integer deliveryId = response.path("deliveryId");
+    Assert.assertNotNull(deliveryId, "deliveryId is null");
+    Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
+
+    String status = response.path("status");
+    Assert.assertNotNull(status, "status is null");
+
+    String dasherStatus = response.path("dasherStatus");
+    Assert.assertNotNull(dasherStatus, "dasherStatus is null");
+
+    String statusUrl = response.path("statusUrl");
+    Assert.assertNotNull(statusUrl, "statusUrl is null");
+
+    String estimatedPickupTime = response.path("estimatedPickupTime");
+    Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+
+    String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+    Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+    Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
+
+    // Additional Checks per Specification
+    Assert.assertTrue(isTimeAfter(estimatedDeliveryTime, estimatedPickupTime), "estimatedDeliveryTime should be after estimatedPickupTime");
+}
+
+@Test
+public void testScheduleDeliveryMissingFields() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestMissingFields.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
+
+@Test
+public void testScheduleDeliveryInvalidData() throws IOException {
+    String requestBody = readFileAsString("request/ScheduleDeliveryRequestInvalidData.json");
+
+    Response response = given()
+            .header("channel-id", "WEBOA")
+            .header("sub-channel-id", "WEB")
+            .header("Content-type", "application/json")
+            .and()
+            .body(requestBody)
+            .when()
+            .post("/brand/SDI/location/123/delivery")
+            .then()
+            .statusCode(400)
+            .extract()
+            .response();
+
+    String responseBody = response.getBody().asString();
+    System.out.println(responseBody);
+
+    // Assertions based on the expected error response structure
+    Assert.assertTrue(responseBody.contains("\"error\":"));
+    Assert.assertTrue(responseBody.contains("\"message\":"));
+
+    String error = response.path("error");
+    Assert.assertEquals(error, "Bad Request", "Expected error to be 'Bad Request'");
+
+    String message = response.path("message");
+    Assert.assertNotNull(message, "message is null");
+}
 }
