@@ -85,6 +85,134 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
 
         // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Validating presence and correctness of specific fields
+        String message = response.path("message");
+        Assert.assertNotNull(message, "message is null");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId is null");
+    }
+
+    @Test
+    public void testPostUpdateDeliveryStatusMissingHeaders() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+        Assert.assertTrue(responseBody.contains("\"errors\":"));
+
+        // Validating presence and correctness of specific fields
+        String errorMessage = response.path("errorMessage");
+        Assert.assertNotNull(errorMessage, "errorMessage is null");
+
+        List<Object> errors = response.path("errors");
+        Assert.assertNotNull(errors, "errors is null");
+        Assert.assertFalse(errors.isEmpty(), "errors should not be empty");
+    }
+
+    @Test
+    public void testPostUpdateDeliveryStatusInvalidRequestBody() throws IOException {
+        String requestBody = "{ \"invalid\": \"data\" }";
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+        Assert.assertTrue(responseBody.contains("\"errors\":"));
+
+        // Validating presence and correctness of specific fields
+        String errorMessage = response.path("errorMessage");
+        Assert.assertNotNull(errorMessage, "errorMessage is null");
+
+        List<Object> errors = response.path("errors");
+        Assert.assertNotNull(errors, "errors is null");
+        Assert.assertFalse(errors.isEmpty(), "errors should not be empty");
+    }
+
+    @Test
+    public void testPostUpdateDeliveryStatusServerError() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(500)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+        Assert.assertTrue(responseBody.contains("\"errors\":"));
+
+        // Validating presence and correctness of specific fields
+        String errorMessage = response.path("errorMessage");
+        Assert.assertNotNull(errorMessage, "errorMessage is null");
+
+        List<Object> errors = response.path("errors");
+        Assert.assertNotNull(errors, "errors is null");
+        Assert.assertFalse(errors.isEmpty(), "errors should not be empty");
     }
 
     @Test
