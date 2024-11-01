@@ -1,46 +1,51 @@
 {
-    "pickupDetails": {
-      "id": "9972",
-      "time": "2024-10-24T15:50:40.666Z",
-      "coordinates": {
-        "lat": 35.52984497,
-        "lon": -97.5302522
-      },
-      "contactDetails": {
-        "email": "store4620@sonicpartnernet.com",
-        "phone": "405-843-5133",
-        "fax": "405-843-5912",
-        "address": {
-          "label": "OKLAHOMA CITY, OK (WSTRN AVE.)",
-          "line1": "9972 5625 N WESTERN AVE.",
-          "line2": "Add 2",
-          "postalCode": "73118",
-          "cityName": "OKLAHOMA CITY",
-          "stateProvinceCode": "OK",
-          "countryName": "US",
-          "countryCode": "US"
-        }
-      }
+  "pickupDetails": {
+    "id": "9972",
+    "time": "2024-04-15T15:00:40.661Z",
+    "coordinates": {
+      "lat": 33.9354,
+      "lon": -84.3400
     },
-    "deliveryDetails": {
-      "time": "2024-10-24T16:10:40.666Z",
-      "locationDetails": {
-        "coordinates": {
-          "lat": 35.52984497,
-          "lon": -97.5302522
-        },
-        "address": {
-          "line1": "9972 5625 N WESTERN AVE.",
-          "line2": "Add 2",
-          "postalCode": "73118",
-          "cityName": "OKLAHOMA CITY",
-          "stateProvinceCode": "OK",
-          "countryName": "US",
-          "countryCode": "US"
-        }
+    "contactDetails": {
+      "email": "test@gmail.com",
+      "phone": "+1111111111111",
+      "fax": "+1111111111111",
+      "address": {
+        "label": "Sonic",
+        "line1": "5025 Excelsior Blvd., Atlanta, GA",
+        "line2": "",
+        "line3": "",
+        "referencePoint": "",
+        "postalCode": "11111",
+        "cityName": "Atlanta",
+        "stateProvinceName": "Georgia",
+        "stateProvinceCode": "GA",
+        "countryName": "USA",
+        "countryCode": "US"
       }
-    },
-    "order": {
-      "subTotal": 19.99
     }
+  },
+  "deliveryDetails": {
+    "time": "2024-04-15T16:00:40.661Z",
+    "locationDetails": {
+      "coordinates": {
+        "lat": 33.9354,
+        "lon": -84.3400
+      },
+      "address": {
+        "line1": "5025 Excelsior Blvd., Atlanta, GA",
+        "line2": "",
+        "line3": "",
+        "postalCode": "11111",
+        "cityName": "Atlanta",
+        "stateProvinceName": "Georgia",
+        "stateProvinceCode": "GA",
+        "countryName": "USA",
+        "countryCode": "US"
+      }
+    }
+  },
+  "order": {
+    "subTotal": 19.99
   }
+}
