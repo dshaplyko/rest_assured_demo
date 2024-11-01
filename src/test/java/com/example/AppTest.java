@@ -34,8 +34,8 @@ public class AppTest {
     }
 
     @Test
-    public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+    public void testPostScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequest.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
@@ -44,7 +44,7 @@ public class AppTest {
                 .and()
                 .body(requestBody)
                 .when()
-                .post("/brand/SDI/delivery/estimate")
+                .post("/brand/SDI/location/123/delivery")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -54,86 +54,88 @@ public class AppTest {
         System.out.println(responseBody);
 
         // Assertions based on the expected response structure
-        Assert.assertTrue(responseBody.contains("\"pickupTime\":"));
-        Assert.assertTrue(responseBody.contains("\"deliveryTime\":"));
-        Assert.assertTrue(responseBody.contains("\"fee\":"));
-        Assert.assertTrue(responseBody.contains("\"currency\":"));
-        Assert.assertTrue(responseBody.contains("\"id\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+        Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+        Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryAddress\":"));
+        Assert.assertTrue(responseBody.contains("\"estimatedPickupTime\":"));
+        Assert.assertTrue(responseBody.contains("\"estimatedDeliveryTime\":"));
+        Assert.assertTrue(responseBody.contains("\"customerName\":"));
+        Assert.assertTrue(responseBody.contains("\"customerPhoneNumber\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryFee\":"));
+        Assert.assertTrue(responseBody.contains("\"driverTip\":"));
 
         // Validating presence and correctness of specific fields
-        String pickupTime = response.path("pickupTime");
-        Assert.assertNotNull(pickupTime, "pickupTime is null");
+        Integer deliveryId = response.path("deliveryId");
+        Assert.assertNotNull(deliveryId, "deliveryId is null");
 
-        String deliveryTime = response.path("deliveryTime");
-        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+        String status = response.path("status");
+        Assert.assertNotNull(status, "status is null");
 
-        Float fee = response.path("fee");
-        Assert.assertNotNull(fee, "fee is null");
-        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+        String dasherStatus = response.path("dasherStatus");
+        Assert.assertNotNull(dasherStatus, "dasherStatus is null");
 
-        String currency = response.path("currency");
-        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+        String statusUrl = response.path("statusUrl");
+        Assert.assertNotNull(statusUrl, "statusUrl is null");
 
-        Integer id = response.path("id");
-        Assert.assertNotNull(id, "id is null");
-        Assert.assertTrue(id > 0, "id should be greater than 0");
+        String instructionsFromCustomer = response.path("instructionsFromCustomer");
+        Assert.assertNotNull(instructionsFromCustomer, "instructionsFromCustomer is null");
+
+        String estimatedPickupTime = response.path("estimatedPickupTime");
+        Assert.assertNotNull(estimatedPickupTime, "estimatedPickupTime is null");
+
+        String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+        Assert.assertNotNull(estimatedDeliveryTime, "estimatedDeliveryTime is null");
+
+        String customerName = response.path("customerName");
+        Assert.assertNotNull(customerName, "customerName is null");
+
+        String customerPhoneNumber = response.path("customerPhoneNumber");
+        Assert.assertNotNull(customerPhoneNumber, "customerPhoneNumber is null");
+
+        Integer deliveryFee = response.path("deliveryFee");
+        Assert.assertNotNull(deliveryFee, "deliveryFee is null");
+
+        Integer driverTip = response.path("driverTip");
+        Assert.assertNotNull(driverTip, "driverTip is null");
 
         // Additional Checks per Specification
-        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
-        // Ensure the times set are in the future (example check)
-        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
-        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
-
-        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+        Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
     }
 
     @Test
-    public void testPostDeliveryValidate() throws IOException {
-        String requestBody = readFileAsString("request/PostValidateRequest.json");
+    public void testPostScheduleDeliveryInvalid() throws IOException {
+        String requestBody = readFileAsString("request/PostScheduleDeliveryRequestInvalid.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
-                .header("sub-channel-id", "MOBILE")
+                .header("sub-channel-id", "WEB")
                 .header("Content-type", "application/json")
                 .and()
                 .body(requestBody)
                 .when()
-                .post("/brand/SDI/delivery/validate")
+                .post("/brand/SDI/location/123/delivery")
                 .then()
-                .statusCode(200)
+                .statusCode(400)
                 .extract()
                 .response();
 
         String responseBody = response.getBody().asString();
         System.out.println(responseBody);
 
-        // Validate that response contains 'pickupLocations' and it is a non-empty array
-        List<Object> pickupLocations = response.path("pickupLocations");
-        Assert.assertNotNull(pickupLocations, "pickupLocations is null");
-        Assert.assertFalse(pickupLocations.isEmpty(), "pickupLocations should not be empty");
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+        Assert.assertTrue(responseBody.contains("\"errors\":"));
 
-        // Example assertions for nested fields within the first location
-        String firstPickupId = response.path("pickupLocations[0].id");
-        Assert.assertEquals(firstPickupId, "9972", "Mismatch in first pickup location id");
+        // Validating presence and correctness of specific fields
+        String errorMessage = response.path("errorMessage");
+        Assert.assertNotNull(errorMessage, "errorMessage is null");
 
-        String firstPickupCity = response.path("pickupLocations[0].contactDetails.address.cityName");
-        Assert.assertEquals(firstPickupCity, "OKLAHOMA CITY", "Mismatch in first pickup location city name");
-
-        // Example assertions for the second location if applicable
-        String secondPickupId = response.path("pickupLocations[1].id");
-        Assert.assertEquals(secondPickupId, "9974", "Mismatch in second pickup location id");
-
-        String secondPickupCity = response.path("pickupLocations[1].contactDetails.address.cityName");
-        Assert.assertEquals(secondPickupCity, "Oklahoma City", "Mismatch in second pickup location city name");
-
-        // Additional Checks per Specification
-        String deliveryTime = response.path("deliveryDetails.time");
-        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryDetails.time should be in the future");
-
-        String firstPickupTime = response.path("pickupLocations[0].time");
-        Assert.assertTrue(isTimeInFuture(firstPickupTime), "pickupDetails.locations[0].time should be in the future");
-
-        Assert.assertTrue(isTimeAfter(deliveryTime, firstPickupTime), "deliveryDetails.time should be after pickupDetails.locations[0].time");
+        String errors = response.path("errors");
+        Assert.assertNotNull(errors, "errors is null");
     }
 
     // Utility methods to validate time constraints; Adjust according to specific implementations
