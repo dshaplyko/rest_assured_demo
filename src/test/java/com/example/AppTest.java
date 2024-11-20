@@ -146,4 +146,73 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testResetCircuitBreakerSuccess() throws IOException {
+        String brandId = "ARB";
+        String circuitBreakerName = "exampleCircuitBreaker";
+        
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/reset")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"" + circuitBreakerName + "\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"CLOSED\""));
+    }
+
+    @Test
+    public void testResetCircuitBreakerBadRequest() throws IOException {
+        String brandId = "ARB";
+        String circuitBreakerName = "invalidCircuitBreaker";
+        
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/reset")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected error response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":\"Unable to reset Circuit Breaker.\""));
+        Assert.assertTrue(responseBody.contains("\"errors\""));
+    }
+
+    @Test
+    public void testResetCircuitBreakerInternalServerError() throws IOException {
+        String brandId = "ARB";
+        String circuitBreakerName = "exampleCircuitBreaker";
+        
+        // Simulate server error by using an invalid base URI
+        RestAssured.baseURI = "https://invalid-url.com";
+        
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/reset")
+                .then()
+                .statusCode(500)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected error response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":\"Unable to reset Circuit Breaker.\""));
+        Assert.assertTrue(responseBody.contains("\"errors\""));
+    }
 }
