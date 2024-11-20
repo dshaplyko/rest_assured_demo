@@ -34,8 +34,8 @@ public class AppTest {
     }
 
     @Test
-    public void testPostDeliveryEstimate() throws IOException {
-        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
@@ -44,7 +44,7 @@ public class AppTest {
                 .and()
                 .body(requestBody)
                 .when()
-                .post("/brand/SDI/delivery/estimate")
+                .post("/brand/SDI/location/123/delivery")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -54,46 +54,110 @@ public class AppTest {
         System.out.println(responseBody);
 
         // Assertions based on the expected response structure
-        Assert.assertTrue(responseBody.contains("\"pickupTime\":"));
-        Assert.assertTrue(responseBody.contains("\"deliveryTime\":"));
-        Assert.assertTrue(responseBody.contains("\"fee\":"));
-        Assert.assertTrue(responseBody.contains("\"currency\":"));
-        Assert.assertTrue(responseBody.contains("\"id\":"));
+        Assert.assertTrue(responseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(responseBody.contains("\"status\":"));
+        Assert.assertTrue(responseBody.contains("\"dasherStatus\":"));
+        Assert.assertTrue(responseBody.contains("\"statusUrl\":"));
+        Assert.assertTrue(responseBody.contains("\"instructionsFromCustomer\":"));
 
         // Validating presence and correctness of specific fields
-        String pickupTime = response.path("pickupTime");
-        Assert.assertNotNull(pickupTime, "pickupTime is null");
+        Integer deliveryId = response.path("deliveryId");
+        Assert.assertNotNull(deliveryId, "deliveryId is null");
+        Assert.assertTrue(deliveryId > 0, "deliveryId should be greater than 0");
 
-        String deliveryTime = response.path("deliveryTime");
-        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+        String status = response.path("status");
+        Assert.assertNotNull(status, "status is null");
 
-        Float fee = response.path("fee");
-        Assert.assertNotNull(fee, "fee is null");
-        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+        String dasherStatus = response.path("dasherStatus");
+        Assert.assertNotNull(dasherStatus, "dasherStatus is null");
 
-        String currency = response.path("currency");
-        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+        String statusUrl = response.path("statusUrl");
+        Assert.assertNotNull(statusUrl, "statusUrl is null");
 
-        Integer id = response.path("id");
-        Assert.assertNotNull(id, "id is null");
-        Assert.assertTrue(id > 0, "id should be greater than 0");
+        String instructionsFromCustomer = response.path("instructionsFromCustomer");
+        Assert.assertNotNull(instructionsFromCustomer, "instructionsFromCustomer is null");
 
         // Additional Checks per Specification
-        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
         // Ensure the times set are in the future (example check)
-        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
-        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+        String estimatedPickupTime = response.path("estimatedPickupTime");
+        Assert.assertTrue(isTimeInFuture(estimatedPickupTime), "estimatedPickupTime should be in the future");
 
-        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+        String estimatedDeliveryTime = response.path("estimatedDeliveryTime");
+        Assert.assertTrue(isTimeInFuture(estimatedDeliveryTime), "estimatedDeliveryTime should be in the future");
     }
 
     @Test
-    public void testPostDeliveryValidate() throws IOException {
-        String requestBody = readFileAsString("request/PostValidateRequest.json");
+    public void testUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/UpdateDeliveryStatusRequest.json");
 
         Response response = given()
                 .header("channel-id", "WEBOA")
-                .header("sub-channel-id", "MOBILE")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Validating presence and correctness of specific fields
+        String message = response.path("message");
+        Assert.assertNotNull(message, "message is null");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId is null");
+    }
+
+    @Test
+    public void testCancelDelivery() throws IOException {
+        String requestBody = readFileAsString("request/CancelDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/123/cancel")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"returnInitiated\":"));
+        Assert.assertTrue(responseBody.contains("\"cancelledAt\":"));
+
+        // Validating presence and correctness of specific fields
+        Boolean returnInitiated = response.path("returnInitiated");
+        Assert.assertNotNull(returnInitiated, "returnInitiated is null");
+
+        String cancelledAt = response.path("cancelledAt");
+        Assert.assertNotNull(cancelledAt, "cancelledAt is null");
+        Assert.assertTrue(isTimeInFuture(cancelledAt), "cancelledAt should be in the future");
+    }
+
+    @Test
+    public void testValidateDeliveryAddress() throws IOException {
+        String requestBody = readFileAsString("request/ValidateDeliveryAddressRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
                 .header("Content-type", "application/json")
                 .and()
                 .body(requestBody)
