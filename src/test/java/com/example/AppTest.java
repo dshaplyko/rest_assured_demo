@@ -146,4 +146,97 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testDisableCircuitBreaker() throws IOException {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/disable")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"" + circuitBreakerName + "\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"DISABLED\""));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerInvalidBrand() throws IOException {
+        String brandId = "invalidBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/disable")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker"));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerInvalidName() throws IOException {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "invalidCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/disable")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker"));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerServiceDown() throws IOException {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/disable")
+                .then()
+                .statusCode(500)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker"));
+    }
 }
