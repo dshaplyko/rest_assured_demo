@@ -25,13 +25,141 @@ public class AppTest {
         FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
         config.load(fis);
         RestAssured.baseURI = config.getProperty("baseUrl");
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
     }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
 
     // Helper method to read JSON file as a String
     private String readFileAsString(String fileName) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         return IOUtils.toString(classLoader.getResourceAsStream(fileName), StandardCharsets.UTF_8);
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
     }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
 
     @Test
     public void testPostDeliveryEstimate() throws IOException {
@@ -85,7 +213,71 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
 
         // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
     }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
 
     @Test
     public void testPostDeliveryValidate() throws IOException {
@@ -134,6 +326,262 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(firstPickupTime), "pickupDetails.locations[0].time should be in the future");
 
         Assert.assertTrue(isTimeAfter(deliveryTime, firstPickupTime), "deliveryDetails.time should be after pickupDetails.locations[0].time");
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    @Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    }
+
+    // Utility methods to validate time constraints; Adjust according to specific implementations
+    private boolean isTimeInFuture(String time) {
+        // Check if the given time (ISO 8601 format) is in the future
+        return java.time.Instant.parse(time).isAfter(java.time.Instant.now());
+    }
+
+    private boolean isTimeAfter(String laterTime, String earlierTime) {
+        // Check if laterTime (ISO 8601 format) is after earlierTime
+        return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
+    }
+}
+@Test
+    public void testScheduleDelivery() throws IOException {
+        String requestBody = readFileAsString("request/ScheduleDeliveryRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+        Assert.assertTrue(responseBody.contains(""));
+
+        // Validating presence and correctness of specific fields
+        String pickupTime = response.path("pickupTime");
+        Assert.assertNotNull(pickupTime, "pickupTime is null");
+
+        String deliveryTime = response.path("deliveryTime");
+        Assert.assertNotNull(deliveryTime, "deliveryTime is null");
+
+        Float fee = response.path("fee");
+        Assert.assertNotNull(fee, "fee is null");
+        Assert.assertTrue(fee > 0, "fee should be greater than 0");
+
+        String currency = response.path("currency");
+        Assert.assertEquals(currency, "USD", "Mismatch in currency");
+
+        Integer id = response.path("id");
+        Assert.assertNotNull(id, "id is null");
+        Assert.assertTrue(id > 0, "id should be greater than 0");
+
+        // Additional Checks per Specification
+        // Ensure either pickupDetails.time or deliveryDetails.time is set (assuming both are not null in the request)
+        // Ensure the times set are in the future (example check)
+        Assert.assertTrue(isTimeInFuture(pickupTime), "pickupTime should be in the future");
+        Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
+
+        // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
     }
 
     // Utility methods to validate time constraints; Adjust according to specific implementations
