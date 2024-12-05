@@ -1,0 +1,51 @@
+{
+  "id": 100001,
+  "idempotentId": "633c2c5d-27c6-4744-bf55-b9a7cb58fe02",
+  "total": 12.25,
+  "subTotal": 10.25,
+  "fulfillment": {
+    "driverPickupTime": "2024-04-15T15:00:40.666Z",
+    "fulfillmentTime": "2024-04-15T16:00:40.666Z",
+    "contactDetails": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "example@mail.com",
+      "phoneNumber": "+16505555555",
+      "deliveryAddress": {
+        "address1": "5025 Excelsior Blvd.",
+        "address2": "Suite #600",
+        "city": "St. Louis Park",
+        "stateCode": "MN",
+        "country": "US",
+        "postalCode": "55416",
+        "coordinates": {
+          "lat": 44.9483,
+          "lon": -93.3488
+        }
+      },
+      "instructions": [
+        "Please call me to buzz you in"
+      ]
+    }
+  },
+  "items": [
+    {
+      "description": "classy order item",
+      "quantity": 1,
+      "modifierGroups": [
+        {
+          "modifiers": [
+            {
+              "description": "Harvest Wheat Bun",
+              "quantity": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tips": {
+    "driverTip": 5.00
+  },
+  "containsAlcohol": false
+}
