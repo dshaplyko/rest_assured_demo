@@ -146,4 +146,98 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testPostDeliveryEstimate_MissingFields() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest_MissingFields.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
+
+    @Test
+    public void testPostDeliveryValidate_InvalidCoordinates() throws IOException {
+        String requestBody = readFileAsString("request/PostValidateRequest_InvalidCoordinates.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "MOBILE")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/validate")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
+
+    @Test
+    public void testPostDeliveryEstimate_InvalidBrandId() throws IOException {
+        String requestBody = readFileAsString("request/PostEstimateRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/INVALID/delivery/estimate")
+                .then()
+                .statusCode(404)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
+
+    @Test
+    public void testPostDeliveryValidate_MissingHeaders() throws IOException {
+        String requestBody = readFileAsString("request/PostValidateRequest.json");
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery/validate")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":"));
+    }
 }
