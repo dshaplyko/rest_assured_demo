@@ -146,4 +146,96 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testEndToEndDeliveryScenario() throws IOException {
+        // Step 1: Get Delivery Estimates
+        String estimateRequestBody = readFileAsString("request/PostEstimateRequest.json");
+
+        Response estimateResponse = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(estimateRequestBody)
+                .when()
+                .post("/brand/SDI/delivery/estimate")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String estimateResponseBody = estimateResponse.getBody().asString();
+        System.out.println("Estimate Response: " + estimateResponseBody);
+
+        // Extract necessary fields for subsequent requests
+        String pickupId = estimateResponse.path("pickupDetails.id");
+        String deliveryId = estimateResponse.path("id");
+
+        // Step 2: Validate Delivery
+        String validateRequestBody = readFileAsString("request/PostValidateRequest.json");
+
+        Response validateResponse = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "MOBILE")
+                .header("Content-type", "application/json")
+                .and()
+                .body(validateRequestBody)
+                .when()
+                .post("/brand/SDI/delivery/validate")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String validateResponseBody = validateResponse.getBody().asString();
+        System.out.println("Validate Response: " + validateResponseBody);
+
+        // Step 3: Schedule Delivery
+        String scheduleRequestBody = readFileAsString("request/PostScheduleRequest.json");
+
+        Response scheduleResponse = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(scheduleRequestBody)
+                .when()
+                .post("/brand/SDI/location/123/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String scheduleResponseBody = scheduleResponse.getBody().asString();
+        System.out.println("Schedule Response: " + scheduleResponseBody);
+
+        // Extract deliveryId for cancellation
+        String scheduledDeliveryId = scheduleResponse.path("deliveryId");
+
+        // Step 4: Cancel Delivery
+        String cancelRequestBody = readFileAsString("request/PostCancelRequest.json");
+
+        Response cancelResponse = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(cancelRequestBody)
+                .when()
+                .post("/brand/SDI/delivery/" + scheduledDeliveryId + "/cancel")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String cancelResponseBody = cancelResponse.getBody().asString();
+        System.out.println("Cancel Response: " + cancelResponseBody);
+
+        // Assertions to validate the end-to-end flow
+        Assert.assertTrue(estimateResponseBody.contains("\"pickupDetails\":"));
+        Assert.assertTrue(validateResponseBody.contains("\"pickupDetails\":"));
+        Assert.assertTrue(scheduleResponseBody.contains("\"deliveryId\":"));
+        Assert.assertTrue(cancelResponseBody.contains("\"returnInitiated\":true"));
+    }
 }
