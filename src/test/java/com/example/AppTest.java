@@ -27,10 +27,74 @@ public class AppTest {
         RestAssured.baseURI = config.getProperty("baseUrl");
     }
 
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Extract and validate specific fields
+        String message = response.path("message");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId should not be null");
+    }
+
     // Helper method to read JSON file as a String
     private String readFileAsString(String fileName) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         return IOUtils.toString(classLoader.getResourceAsStream(fileName), StandardCharsets.UTF_8);
+    }
+
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Extract and validate specific fields
+        String message = response.path("message");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId should not be null");
     }
 
     @Test
@@ -85,6 +149,38 @@ public class AppTest {
         Assert.assertTrue(isTimeInFuture(deliveryTime), "deliveryTime should be in the future");
 
         // Both coordinates are mandatory in request (already part of schema, thus assumed valid)
+    }
+
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Extract and validate specific fields
+        String message = response.path("message");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId should not be null");
     }
 
     @Test
@@ -146,4 +242,68 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Extract and validate specific fields
+        String message = response.path("message");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId should not be null");
+    }
 }
+
+    @Test
+    public void testPostUpdateDeliveryStatus() throws IOException {
+        String requestBody = readFileAsString("request/PostUpdateDeliveryStatusRequest.json");
+
+        Response response = given()
+                .header("channel-id", "WEBOA")
+                .header("sub-channel-id", "WEB")
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .post("/brand/SDI/delivery")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on expected response structure
+        Assert.assertTrue(responseBody.contains("\"message\":"));
+        Assert.assertTrue(responseBody.contains("\"messageId\":"));
+
+        // Extract and validate specific fields
+        String message = response.path("message");
+        Assert.assertEquals(message, "ACK", "Mismatch in message");
+
+        String messageId = response.path("messageId");
+        Assert.assertNotNull(messageId, "messageId should not be null");
+    }
