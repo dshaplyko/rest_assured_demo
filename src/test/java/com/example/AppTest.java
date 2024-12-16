@@ -146,4 +146,71 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testResetCircuitBreakerSuccess() {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/reset")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"" + circuitBreakerName + "\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"CLOSED\""));
+    }
+
+    @Test
+    public void testResetCircuitBreakerNotFound() {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "nonExistentCircuitBreaker";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/reset")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":\"Unable to reset Circuit Breaker.\""));
+    }
+
+    @Test
+    public void testResetCircuitBreakerInvalidParameters() {
+        String brandId = "invalidBrandId";
+        String circuitBreakerName = "invalidCircuitBreakerName";
+
+        Response response = given()
+                .pathParam("brandId", brandId)
+                .pathParam("circuitbreakername", circuitBreakerName)
+                .when()
+                .put("/fulfillment/brand/{brandId}/resilience/circuitbreaker/{circuitbreakername}/reset")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"errorMessage\":\"Unable to reset Circuit Breaker.\""));
+    }
 }
