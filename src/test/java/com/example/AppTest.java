@@ -146,4 +146,88 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testDisableCircuitBreaker() {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/disable")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"" + circuitBreakerName + "\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"DISABLED\""));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerInvalidBrandId() {
+        String brandId = "invalidBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/disable")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker."));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerInvalidCircuitBreakerName() {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "invalidCircuitBreakerName";
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/disable")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker."));
+    }
+
+    @Test
+    public void testDisableCircuitBreakerMissingHeaders() {
+        String brandId = "validBrandId";
+        String circuitBreakerName = "validCircuitBreakerName";
+
+        Response response = given()
+                .when()
+                .put("/fulfillment/brand/" + brandId + "/resilience/circuitbreaker/" + circuitBreakerName + "/disable")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("Unable to disable Circuit Breaker."));
+    }
 }
