@@ -146,4 +146,50 @@ public class AppTest {
         // Check if laterTime (ISO 8601 format) is after earlierTime
         return java.time.Instant.parse(laterTime).isAfter(java.time.Instant.parse(earlierTime));
     }
+
+    @Test
+    public void testPutResetCircuitBreaker() throws IOException {
+        String requestBody = readFileAsString("request/PutResetCircuitBreakerRequest.json");
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .put("/fulfillment/brand/SDI/resilience/circuitbreaker/exampleCircuitBreaker/reset")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"exampleCircuitBreaker\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"CLOSED\""));
+    }
+
+    @Test
+    public void testPutDisableCircuitBreaker() throws IOException {
+        String requestBody = readFileAsString("request/PutDisableCircuitBreakerRequest.json");
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(requestBody)
+                .when()
+                .put("/fulfillment/brand/SDI/resilience/circuitbreaker/exampleCircuitBreaker/disable")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        System.out.println(responseBody);
+
+        // Assertions based on the expected response structure
+        Assert.assertTrue(responseBody.contains("\"name\":\"exampleCircuitBreaker\""));
+        Assert.assertTrue(responseBody.contains("\"status\":\"DISABLED\""));
+    }
 }
